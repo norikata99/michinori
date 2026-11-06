@@ -16,7 +16,9 @@
 - 本番：AWS（ECS Fargate、RDS for MySQL、ALB、Route 53、ACM）
 - IaC：Terraform（`infra/`）
 - CI/CD：GitHub Actions（AWS認証はOIDC）
-- バージョン：未決定。着手時に決めてここに追記する
+- バージョン：PHP 8.5、Laravel 13、MySQL 8.4、Node.js 26（ビルドのみ）、Terraform 1.16系
+  - 理由と固定方針は `docs/adr/0002-versions.md` を参照
+  - tfstateはS3バックエンド、ロックはS3のネイティブロック（`use_lockfile = true`）
 
 ## ディレクトリ構成
 ```
