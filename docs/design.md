@@ -168,10 +168,12 @@ work_logs  id, task_id, worked_on(日付), minutes, note
 - パブリックリポジトリでのOIDC信頼ポリシーの絞り方
 
 ## 12. 未決定事項
-- PHP、Laravel、MySQL、Terraformのバージョン
-- tfstateのロック方式（S3のネイティブロックかDynamoDBか。Terraformのバージョン次第）
 - AWSリージョン
 - tasks.status の値
 - 秘密情報の管理先（SSMパラメータストアかSecrets Managerか）
 - ガント表示に使うライブラリ
 - 公開デモの扱い（新規登録の可否、常時公開か必要な時だけ起動か）
+
+## 13. 決定済み（未決定事項から移したもの）
+- バージョン：PHP 8.5、Laravel 13、MySQL 8.4、Node.js 26、Terraform 1.16系（`docs/adr/0002-versions.md`）
+- tfstateのロック方式：S3のネイティブロック（`use_lockfile = true`）（同上）
