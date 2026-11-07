@@ -50,4 +50,30 @@ docs/adr/            設計判断の記録
 - 説明は日本語で行う
 
 ## コマンド
-（環境構築後に追記する）
+PHP・Composer はホストに入れず、すべてコンテナ内で実行する。コマンドはリポジトリのルートで実行する。
+
+```bash
+# 初回のみ
+cp src/.env.example src/.env
+docker compose build
+docker compose run --rm --no-deps php composer install
+docker compose run --rm --no-deps php php artisan key:generate
+
+# 起動・停止（http://localhost）
+docker compose up -d
+docker compose down
+
+# artisan・composer
+docker compose exec php php artisan migrate
+docker compose exec php composer require <package>
+
+# テスト
+docker compose exec php php artisan test
+
+# ログ（LOG_CHANNEL=stderr のため標準出力に出る）
+docker compose logs -f php
+```
+
+- DB の接続先は `compose.yaml` の環境変数で指定している（`src/.env` より優先される）
+- Xdebug を止めたいときは `XDEBUG_MODE=off docker compose up -d`
+- `docker compose down -v` は DB のデータも消える。実行前に確認を取る

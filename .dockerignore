@@ -1,0 +1,21 @@
+# ビルドコンテキスト（リポジトリのルート）から除くもの
+# 秘密情報はイメージに入れない
+**/.env
+**/.env.*
+!**/.env.example
+**/*.tfvars
+
+.git
+.github
+docs
+infra
+**/.DS_Store
+
+src/vendor
+src/node_modules
+src/storage/logs/*
+src/storage/framework/cache/data/*
+src/storage/framework/sessions/*
+src/storage/framework/views/*
+src/database/*.sqlite
+src/public/hot

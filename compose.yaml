@@ -1,0 +1,65 @@
+# ローカル開発用。本番（ECS）と同じく nginx と php-fpm を別コンテナにする
+# DB のユーザー名・パスワードはローカル専用の値。本番では使わない
+
+name: michinori
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      target: dev
+    ports:
+      - "80:80"
+    environment:
+      PHP_FPM_HOST: php
+    volumes:
+      # 開発中は public/ をそのまま見せる（本番ではイメージにコピーする）
+      - ./src/public:/var/www/html/public:ro
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: dev
+    environment:
+      # 実際の環境変数は src/.env より優先される
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: michinori
+      DB_USERNAME: michinori
+      DB_PASSWORD: michinori
+      XDEBUG_MODE: ${XDEBUG_MODE:-develop,debug}
+    volumes:
+      - ./src:/var/www/html
+    extra_hosts:
+      # Linux でも host.docker.internal で Xdebug がホストに繋がるようにする
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: michinori
+      MYSQL_USER: michinori
+      MYSQL_PASSWORD: michinori
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      # ホストの GUI クライアントから繋ぐ用。3306 が使用中なら変える
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-umichinori", "-pmichinori"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mysql-data:
