@@ -1,0 +1,37 @@
+# php-fpm の接続先は環境変数で切り替える
+#   ローカル（compose）：PHP_FPM_HOST=php（サービス名）
+#   本番（ECS）：PHP_FPM_HOST=127.0.0.1（同じタスク内の別コンテナ）
+server {
+    listen 80;
+    server_name _;
+    root /var/www/html/public;
+    index index.php;
+
+    charset utf-8;
+    client_max_body_size 10m;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+    location = /robots.txt  { access_log off; log_not_found off; }
+
+    location ~ ^/index\.php(/|$) {
+        fastcgi_pass ${PHP_FPM_HOST}:9000;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        # php-fpm 側のパスを渡す。nginx と php-fpm でドキュメントルートを揃えておく
+        fastcgi_param SCRIPT_FILENAME /var/www/html/public/index.php;
+        fastcgi_param DOCUMENT_ROOT /var/www/html/public;
+    }
+
+    # index.php 以外の .php は実行させない
+    location ~ \.php$ {
+        return 404;
+    }
+
+    location ~ /\.(?!well-known) {
+        deny all;
+    }
+}
