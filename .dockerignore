@@ -19,3 +19,4 @@ src/storage/framework/sessions/*
 src/storage/framework/views/*
 src/database/*.sqlite
 src/public/hot
+src/public/build

@@ -1,0 +1,63 @@
+# 本番用イメージ（php-prod / nginx-prod）をローカルで確認するためのファイル
+# bind mount を使わず、イメージに入っているものだけで動くことを確かめる
+#
+#   APP_KEY=base64:$(openssl rand -base64 32) docker compose -f compose.prod.yaml up -d --build
+#   docker compose -f compose.prod.yaml run --rm php php artisan migrate --force
+#   open http://localhost:8080
+#   docker compose -f compose.prod.yaml down
+#
+# APP_KEY は up のときにシェルで作って渡す（ファイルに書かない）。
+# 渡し忘れると画面が 500（MissingAppKeyException）になる
+# DB は確認用の使い捨て。データは tmpfs に置き、down すると消える
+# DB のユーザー名・パスワードはローカル専用の値。本番では使わない
+
+name: michinori-prod
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: nginx-prod
+    ports:
+      - "8080:80"
+    environment:
+      PHP_FPM_HOST: php
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: php-prod
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:-}
+      APP_URL: http://localhost:8080
+      LOG_CHANNEL: stderr
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: michinori
+      DB_USERNAME: michinori
+      DB_PASSWORD: michinori
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: michinori
+      MYSQL_USER: michinori
+      MYSQL_PASSWORD: michinori
+      MYSQL_ROOT_PASSWORD: root
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-umichinori", "-pmichinori"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
