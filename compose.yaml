@@ -7,8 +7,8 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: docker/nginx/Dockerfile
-      target: dev
+      dockerfile: docker/Dockerfile
+      target: nginx-dev
     ports:
       - "80:80"
     environment:
@@ -22,8 +22,8 @@ services:
   php:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
-      target: dev
+      dockerfile: docker/Dockerfile
+      target: php-dev
     environment:
       # 実際の環境変数は src/.env より優先される
       LOG_CHANNEL: stderr

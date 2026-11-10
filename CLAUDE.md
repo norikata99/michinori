@@ -23,8 +23,9 @@
 ## ディレクトリ構成
 ```
 src/                 Laravel本体
-docker/              nginx・php-fpmのDockerfile（マルチステージ）
+docker/Dockerfile    nginx・php-fpmのイメージ（--target で php-dev / php-prod / nginx-dev / nginx-prod を選ぶ）
 compose.yaml         ローカル開発用
+compose.prod.yaml    本番用イメージをローカルで確認する用
 infra/bootstrap/     tfstate用S3（最初に一度だけ）
 infra/modules/       network / ecs / rds / alb など
 infra/envs/prod/     実際にデプロイする環境
@@ -72,6 +73,11 @@ docker compose exec php php artisan test
 
 # ログ（LOG_CHANNEL=stderr のため標準出力に出る）
 docker compose logs -f php
+
+# 本番用イメージの確認（http://localhost:8080、DB は使い捨て）
+APP_KEY="base64:$(openssl rand -base64 32)" docker compose -f compose.prod.yaml up -d --build
+docker compose -f compose.prod.yaml run --rm php php artisan migrate --force
+docker compose -f compose.prod.yaml down
 ```
 
 - DB の接続先は `compose.yaml` の環境変数で指定している（`src/.env` より優先される）
