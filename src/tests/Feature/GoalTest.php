@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Enums\GoalStatus;
 use App\Models\Goal;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 class GoalTest extends TestCase
@@ -183,5 +185,25 @@ class GoalTest extends TestCase
         $goal->user->delete();
 
         $this->assertModelMissing($goal);
+    }
+
+    public function test_database_rejects_unknown_status(): void
+    {
+        // CHECK 制約は MySQL のときだけ付けている（マイグレーションのコメント参照）
+        if (DB::getDriverName() !== 'mysql') {
+            $this->markTestSkipped('CHECK 制約は MySQL でだけ確認できる');
+        }
+
+        $user = User::factory()->create();
+
+        $this->expectException(QueryException::class);
+
+        DB::table('goals')->insert([
+            'user_id' => $user->id,
+            'title' => '不正な状態',
+            'planned_start' => '2026-11-01',
+            'planned_end' => '2026-11-30',
+            'status' => 'unknown',
+        ]);
     }
 }
