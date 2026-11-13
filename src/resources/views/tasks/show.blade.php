@@ -26,6 +26,12 @@
             @endif
 
             <div class="p-6 bg-white shadow-sm sm:rounded-lg">
+                <h3 class="font-semibold text-lg text-gray-800">予定と実績</h3>
+                <p class="mt-1 text-sm text-gray-600">実績は作業ログの合計。日程のズレは終了予定日と完了日の差</p>
+                <x-progress-summary :progress="$progress" finished-label="終了予定日と完了日" class="mt-4" />
+            </div>
+
+            <div class="p-6 bg-white shadow-sm sm:rounded-lg">
                 <h3 class="font-semibold text-lg text-gray-800">作業ログを追加</h3>
                 <form method="post" action="{{ route('tasks.work-logs.store', $task) }}" class="mt-4 space-y-6">
                     @csrf
@@ -39,7 +45,7 @@
             <div>
                 <div class="flex items-baseline justify-between">
                     <h3 class="font-semibold text-lg text-gray-800">作業ログ</h3>
-                    <p class="text-sm text-gray-700">合計 <x-minutes :value="$totalMinutes" class="font-semibold" />（見積もり <x-minutes :value="$task->estimated_minutes" />）</p>
+                    <p class="text-sm text-gray-700">合計 <x-minutes :value="$progress->actualMinutes" class="font-semibold" /></p>
                 </div>
 
                 <div class="mt-4 bg-white shadow-sm sm:rounded-lg overflow-x-auto">
