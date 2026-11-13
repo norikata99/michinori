@@ -43,7 +43,7 @@ class TaskController extends Controller
             'goal' => $task->goal,
             'task' => $task,
             'workLogs' => $task->workLogs()->orderByDesc('worked_on')->orderByDesc('id')->get(),
-            'totalMinutes' => (int) $task->workLogs()->sum('minutes'),
+            'progress' => $task->progress(),
             'newWorkLog' => new WorkLog(['worked_on' => now()]),
         ]);
     }

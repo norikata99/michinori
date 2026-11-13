@@ -54,7 +54,8 @@ class WorkLogTest extends TestCase
             ->assertSee('このタスクのログ')
             ->assertDontSee('別のタスクのログ')
             // 90 + 45 = 135分。別のタスクの 600分 は含まない
-            ->assertSeeInOrder(['合計', '2時間15分', '見積もり', '5時間']);
+            ->assertSeeInOrder(['見積もり', '5時間', '実績', '2時間15分'])
+            ->assertSeeInOrder(['合計', '2時間15分']);
     }
 
     public function test_task_page_shows_zero_total_without_logs(): void

@@ -44,7 +44,8 @@ class GoalController extends Controller
 
         return view('goals.show', [
             'goal' => $goal,
-            'tasks' => $goal->tasks()->orderBy('planned_start')->orderBy('id')->get(),
+            'progress' => $goal->progress(),
+            'tasks' => $goal->tasks()->withProgress()->orderBy('planned_start')->orderBy('id')->get(),
         ]);
     }
 

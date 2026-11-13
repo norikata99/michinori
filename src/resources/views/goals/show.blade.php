@@ -21,6 +21,12 @@
                 <div class="p-4 text-sm text-green-800 bg-green-50 rounded-md">{{ session('status') }}</div>
             @endif
 
+            <div class="p-6 bg-white shadow-sm sm:rounded-lg">
+                <h3 class="font-semibold text-lg text-gray-800">予定と実績</h3>
+                <p class="mt-1 text-sm text-gray-600">見積もり・実績は配下のタスクの合計。日程のズレは締切と達成日の差</p>
+                <x-progress-summary :progress="$progress" finished-label="締切と達成日" class="mt-4" />
+            </div>
+
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-lg text-gray-800">タスク</h3>
                 <a href="{{ route('goals.tasks.create', $goal) }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">新しいタスク</a>
@@ -31,27 +37,36 @@
                     <p class="p-6 text-gray-600">まだタスクがありません。</p>
                 @else
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50 text-left text-gray-600">
+                        <thead class="bg-gray-50 text-left text-gray-600 whitespace-nowrap">
                             <tr>
-                                <th class="px-6 py-3 font-medium">タイトル</th>
-                                <th class="px-6 py-3 font-medium">開始予定日</th>
-                                <th class="px-6 py-3 font-medium">終了予定日</th>
-                                <th class="px-6 py-3 font-medium">見積もり</th>
-                                <th class="px-6 py-3 font-medium">状態</th>
-                                <th class="px-6 py-3 font-medium">完了日</th>
-                                <th class="px-6 py-3"></th>
+                                <th class="px-4 py-3 font-medium">タイトル</th>
+                                <th class="px-4 py-3 font-medium">状態</th>
+                                <th class="px-4 py-3 font-medium">見積もり</th>
+                                <th class="px-4 py-3 font-medium">実績</th>
+                                <th class="px-4 py-3 font-medium">工数のズレ</th>
+                                <th class="px-4 py-3 font-medium">開始予定日</th>
+                                <th class="px-4 py-3 font-medium">実績開始日</th>
+                                <th class="px-4 py-3 font-medium">終了予定日</th>
+                                <th class="px-4 py-3 font-medium">完了日</th>
+                                <th class="px-4 py-3 font-medium">日程のズレ</th>
+                                <th class="px-4 py-3"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 text-gray-900">
                             @foreach ($tasks as $task)
+                                @php($taskProgress = $task->progress())
                                 <tr>
-                                    <td class="px-6 py-4"><a href="{{ route('tasks.show', $task) }}" class="text-indigo-600 hover:text-indigo-900 hover:underline">{{ $task->title }}</a></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $task->planned_start->toDateString() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $task->planned_end->toDateString() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><x-minutes :value="$task->estimated_minutes" /></td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $task->status->label() }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $task->completed_at?->toDateString() ?? '—' }}</td>
-                                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                                    <td class="px-4 py-4 min-w-[10rem]"><a href="{{ route('tasks.show', $task) }}" class="text-indigo-600 hover:text-indigo-900 hover:underline">{{ $task->title }}</a></td>
+                                    <td class="px-4 py-4 whitespace-nowrap">{{ $task->status->label() }}</td>
+                                    <td class="px-4 py-4 whitespace-nowrap"><x-minutes :value="$taskProgress->estimatedMinutes" /></td>
+                                    <td class="px-4 py-4 whitespace-nowrap"><x-minutes :value="$taskProgress->actualMinutes" /></td>
+                                    <td class="px-4 py-4 whitespace-nowrap"><x-gap-minutes :value="$taskProgress->effortGapMinutes()" /></td>
+                                    <td class="px-4 py-4 whitespace-nowrap">{{ $task->planned_start->toDateString() }}</td>
+                                    <td class="px-4 py-4 whitespace-nowrap">{{ $taskProgress->actualStart?->toDateString() ?? '—' }}</td>
+                                    <td class="px-4 py-4 whitespace-nowrap">{{ $task->planned_end->toDateString() }}</td>
+                                    <td class="px-4 py-4 whitespace-nowrap">{{ $task->completed_at?->toDateString() ?? '—' }}</td>
+                                    <td class="px-4 py-4 whitespace-nowrap"><x-gap-days :value="$taskProgress->scheduleGapDays()" /></td>
+                                    <td class="px-4 py-4 text-right whitespace-nowrap">
                                         <a href="{{ route('tasks.edit', $task) }}" class="text-indigo-600 hover:text-indigo-900">編集</a>
                                     </td>
                                 </tr>
