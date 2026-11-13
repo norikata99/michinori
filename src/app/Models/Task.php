@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Date;
 
 // goal_id は入力から受け取らず、ゴールのリレーション経由で入れる
@@ -51,5 +52,13 @@ class Task extends Model
     public function goal(): BelongsTo
     {
         return $this->belongsTo(Goal::class);
+    }
+
+    /**
+     * @return HasMany<WorkLog, $this>
+     */
+    public function workLogs(): HasMany
+    {
+        return $this->hasMany(WorkLog::class);
     }
 }

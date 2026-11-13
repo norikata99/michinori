@@ -15,7 +15,7 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*')">
+                    <x-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*', 'tasks.*', 'work-logs.*')">
                         ゴール
                     </x-nav-link>
                 </div>
@@ -73,7 +73,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*')">
+            <x-responsive-nav-link :href="route('goals.index')" :active="request()->routeIs('goals.*', 'tasks.*', 'work-logs.*')">
                 ゴール
             </x-responsive-nav-link>
         </div>

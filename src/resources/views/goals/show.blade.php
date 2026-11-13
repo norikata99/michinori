@@ -45,7 +45,7 @@
                         <tbody class="divide-y divide-gray-200 text-gray-900">
                             @foreach ($tasks as $task)
                                 <tr>
-                                    <td class="px-6 py-4">{{ $task->title }}</td>
+                                    <td class="px-6 py-4"><a href="{{ route('tasks.show', $task) }}" class="text-indigo-600 hover:text-indigo-900 hover:underline">{{ $task->title }}</a></td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $task->planned_start->toDateString() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $task->planned_end->toDateString() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap"><x-minutes :value="$task->estimated_minutes" /></td>
