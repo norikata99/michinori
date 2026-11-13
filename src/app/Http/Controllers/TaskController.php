@@ -6,11 +6,12 @@ use App\Enums\TaskStatus;
 use App\Http\Requests\TaskRequest;
 use App\Models\Goal;
 use App\Models\Task;
+use App\Models\WorkLog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-// タスクはゴールの配下に作る。一覧はゴールの詳細画面に出す
+// タスクはゴールの配下に作る。一覧はゴールの詳細画面に、作業ログはタスクの詳細画面に出す
 class TaskController extends Controller
 {
     public function create(Goal $goal): View
@@ -31,6 +32,20 @@ class TaskController extends Controller
         $goal->tasks()->create($request->validated());
 
         return redirect()->route('goals.show', $goal)->with('status', 'タスクを作成しました。');
+    }
+
+    public function show(Task $task): View
+    {
+        Gate::authorize('view', $task);
+
+        // 合計は保存せず、その都度ログから集計する（docs/design.md 3章）
+        return view('tasks.show', [
+            'goal' => $task->goal,
+            'task' => $task,
+            'workLogs' => $task->workLogs()->orderByDesc('worked_on')->orderByDesc('id')->get(),
+            'totalMinutes' => (int) $task->workLogs()->sum('minutes'),
+            'newWorkLog' => new WorkLog(['worked_on' => now()]),
+        ]);
     }
 
     public function edit(Task $task): View
