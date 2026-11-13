@@ -30,7 +30,12 @@
                         <tbody class="divide-y divide-gray-200 text-gray-900">
                             @foreach ($goals as $goal)
                                 <tr>
-                                    <td class="px-6 py-4"><a href="{{ route('goals.show', $goal) }}" class="text-indigo-600 hover:text-indigo-900 hover:underline">{{ $goal->title }}</a></td>
+                                    <td class="px-6 py-4">
+                                        <a href="{{ route('goals.show', $goal) }}" class="text-indigo-600 hover:text-indigo-900 hover:underline">{{ $goal->title }}</a>
+                                        @if ($goal->isPastDeadline())
+                                            <span class="ml-2 inline-block px-2 py-0.5 text-xs font-semibold text-red-800 bg-red-100 rounded">締切超過 {{ $goal->daysPastDeadline() }}日</span>
+                                        @endif
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $goal->planned_start->toDateString() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $goal->planned_end->toDateString() }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">{{ $goal->status->label() }}</td>

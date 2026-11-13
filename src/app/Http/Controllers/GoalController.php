@@ -16,6 +16,7 @@ class GoalController extends Controller
     {
         // 自分のゴールだけを、締切が近い順に出す
         $goals = $request->user()->goals()
+            ->withPlannedFinish()
             ->orderBy('planned_end')
             ->orderBy('id')
             ->get();

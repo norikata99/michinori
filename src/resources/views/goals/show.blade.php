@@ -21,6 +21,8 @@
                 <div class="p-4 text-sm text-green-800 bg-green-50 rounded-md">{{ session('status') }}</div>
             @endif
 
+            <x-deadline-warning :goal="$goal" />
+
             <div class="p-6 bg-white shadow-sm sm:rounded-lg">
                 <h3 class="font-semibold text-lg text-gray-800">予定と実績</h3>
                 <p class="mt-1 text-sm text-gray-600">見積もり・実績は配下のタスクの合計。日程のズレは締切と達成日の差</p>
