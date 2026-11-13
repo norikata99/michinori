@@ -45,7 +45,8 @@ work_logs  id, task_id, worked_on(日付), minutes, note
 ```
 
 - goals.status：進行中 / 達成 / 中止（試験不合格で立て直すケースのため「中止」を残す）
-- tasks.status：値は未決定（例：todo / doing / done）
+- tasks.status：未着手 / 作業中 / 完了（`todo` / `doing` / `done`）。完了にすると `completed_at` に完了日が入る（空なら今日。完了以外に戻すと消える）
+- 状態の列は文字列 + CHECK 制約 + PHP の enum で持つ（`docs/adr/0004-status-columns.md`）
 - goals.achieved_at は記録として持つ。「配下タスクが全部終わった日」とは別の出来事のため自動計算しない
 
 ### 保存せず集計で出す値
@@ -169,7 +170,6 @@ work_logs  id, task_id, worked_on(日付), minutes, note
 
 ## 12. 未決定事項
 - AWSリージョン
-- tasks.status の値
 - 秘密情報の管理先（SSMパラメータストアかSecrets Managerか）
 - ガント表示に使うライブラリ
 - 公開デモの扱い（新規登録の可否、常時公開か必要な時だけ起動か）
@@ -177,3 +177,4 @@ work_logs  id, task_id, worked_on(日付), minutes, note
 ## 13. 決定済み（未決定事項から移したもの）
 - バージョン：PHP 8.5、Laravel 13、MySQL 8.4、Node.js 26、Terraform 1.16系（`docs/adr/0002-versions.md`）
 - tfstateのロック方式：S3のネイティブロック（`use_lockfile = true`）（同上）
+- tasks.status の値：todo / doing / done（3章）

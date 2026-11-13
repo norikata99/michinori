@@ -38,6 +38,16 @@ class GoalController extends Controller
         return redirect()->route('goals.index')->with('status', 'ゴールを作成しました。');
     }
 
+    public function show(Goal $goal): View
+    {
+        Gate::authorize('view', $goal);
+
+        return view('goals.show', [
+            'goal' => $goal,
+            'tasks' => $goal->tasks()->orderBy('planned_start')->orderBy('id')->get(),
+        ]);
+    }
+
     public function edit(Goal $goal): View
     {
         Gate::authorize('update', $goal);
